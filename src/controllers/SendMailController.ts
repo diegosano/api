@@ -10,11 +10,11 @@ class SendMailController {
     async execute(request: Request, response: Response) {
         const { email, survey_id } = request.body;
 
-        const userRepossitory = getCustomRepository(UserRepository);
+        const userRepository = getCustomRepository(UserRepository);
         const surveysRepository = getCustomRepository(SurveysRepository);
         const surveysUsersRepository = getCustomRepository(SurveysUsersRepository);
 
-        const user = await userRepossitory.findOne({ email })
+        const user = await userRepository.findOne({ email })
 
         if (!user) {
             return response.status(400).json({
@@ -33,10 +33,7 @@ class SendMailController {
         const npsPath = resolve(__dirname, "..", "views", "emails", "npsMail.hbs");
 
         const surveyUserAlreadyExists = await surveysUsersRepository.findOne({
-            where: {
-                user_id: user.id,
-                value: null
-            },
+            where: { user_id: user.id, value: null },
             relations: ["user", "survey"],
         });
 
@@ -48,8 +45,11 @@ class SendMailController {
             link: process.env.URL_MAIL
         };
 
+        console.log(surveyUserAlreadyExists);
+
         if (surveyUserAlreadyExists) {
             variables.id = surveyUserAlreadyExists.id;
+            console.log(variables);
             await SendMailService.execute(email, survey.title, variables, npsPath);
             return response.json(surveyUserAlreadyExists);
         }
@@ -61,6 +61,8 @@ class SendMailController {
 
         await surveysUsersRepository.save(surveyUser);
 
+        variables.id = surveyUser.id;
+
         await SendMailService.execute(email, survey.title, variables, npsPath);
 
         return response.json(surveyUser);
@@ -68,4 +70,4 @@ class SendMailController {
 
 }
 
-export { SendMailController }
+export { SendMailController };
