@@ -5,6 +5,7 @@ import { SurveysUsersRepository } from "../repositories/SurveysUsersRepository";
 
 class AnswerController {
     async execute(request: Request, response: Response) {
+
         const { value } = request.params;
         const { u } = request.query;
 
@@ -13,6 +14,7 @@ class AnswerController {
         const surveyUser = await surveysUsersRepository.findOne({
             id: String(u)
         });
+
         if (!surveyUser) {
             throw new AppError("Survey User does not exists");
         }
