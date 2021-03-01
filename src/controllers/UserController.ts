@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
 import { UsersRepository } from '../repositories/UsersRepository';
-import { AppError } from '../error/AppError';
+import { AppError } from '../errors/AppError';
 import * as yup from 'yup';
 
 class UserController {
